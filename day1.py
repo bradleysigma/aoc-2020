@@ -17,4 +17,4 @@ def p2(x):
 p1(x)
 p2(x)
 
-aoc.tock()
+aoc.tock("ms")

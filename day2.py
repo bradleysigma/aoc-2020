@@ -13,4 +13,4 @@ for i in x:
         m += 1
 print(n, m)
 
-aoc.tock()
+aoc.tock("ms")
