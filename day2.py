@@ -1,10 +1,10 @@
 import aoc
 
-x = aoc.strlist(2)
+data = aoc.strlist(2)
 
 n = 0
 m = 0
-for i in x:
+for i in data:
     u, v, c, p = i.replace(": ", "-").replace(" ", "-").split("-")
     u, v = int(u), int(v)
     if u <= p.count(c) <= v:
