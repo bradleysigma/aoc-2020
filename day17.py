@@ -20,22 +20,14 @@ for c in range(6):
     for i in range(v[0], v[1] + 1):
         for j in range(v[2], v[3] + 1):
             for k in range(v[4], v[5] + 1):
-                n = 0
-                for p, q, r in product((-1, 0, 1), repeat=3):
-                    if p == q == r == 0: continue
-                    n += 1 if (i + p, j + q, k + r) in x else 0
-                if (i, j, k) in x and 2 <= n <= 3:
-                    xx.add((i, j, k))
-                if (i, j, k) not in x and n == 3:
+                n = sum((i + p, j + q, k + r) in x for p, q, r in product((-1, 0, 1), repeat=3))
+                n -= 1 if (i, j, k) in x else 0
+                if n == 3 or (n == 2 and (i, j, k) in x):
                     xx.add((i, j, k))
                 for h in range(v[6], v[7] + 1):
-                    m = 0
-                    for p, q, r, t in product((-1, 0, 1), repeat=4):
-                        if p == q == r == t == 0: continue
-                        m += 1 if (i + p, j + q, k + r, h + t) in y else 0
-                    if (i, j, k, h) in y and 2 <= m <= 3:
-                        yy.add((i, j, k, h))
-                    if (i, j, k, h) not in x and m == 3:
+                    m = sum((i + p, j + q, k + r, h + t) in y for p, q, r, t in product((-1, 0, 1), repeat=4))
+                    m -= 1 if (i, j, k, h) in y else 0
+                    if m == 3 or (m == 2 and (i, j, k, h) in y):
                         yy.add((i, j, k, h))
     x = xx
     y = yy

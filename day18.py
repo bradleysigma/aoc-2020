@@ -5,11 +5,9 @@ y = 0
 z = 0
 for i, j in zip(data, data):
     i = "(" + i + ")"
-    while not i.isnumeric():
-        n, m = -1, len(i)
-        while "(" in i[n+1:m]:
-            n = i.index("(", n+1)
-            m = i.index(")", n+1)
+    while i[0] == "(":
+        m = i.index(")")
+        n = i[:m].rindex("(")
         p = i[n+1:m].split(" ")
         while len(p) > 1:
             p[:3] = [(int(p[0]) + int(p[2])) if p[1] == "+" else (int(p[0]) * int(p[2]))]
@@ -17,11 +15,9 @@ for i, j in zip(data, data):
     y += int(i)
 
     j = "(" + j + ")"
-    while not j.isnumeric():
-        n, m = -1, len(j)
-        while "(" in j[n+1:m]:
-            n = j.index("(", n+1)
-            m = j.index(")", n+1)
+    while j[0] == "(":
+        m = j.index(")")
+        n = j[:m].rindex("(")
         q = j[n+1:m].split(" ")
         while "+" in q:
             t = q.index("+")

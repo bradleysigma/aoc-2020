@@ -11,7 +11,7 @@ for p, q in (i.split(" = ") for i in data):
         x[int(p[4:-1])] = int(q) & u | v
         a = "{:036b}".format(int(p[4:-1]) | v)
         s = set([""])
-        for j in range(len(m)):
+        for j in range(36):
             s = {k + "0" for k in s} | {k + "1" for k in s} if m[j] == "X" else {k + a[j] for k in s}
         for k in s:
             y[int(k, 2)] = int(q)

@@ -1,20 +1,21 @@
 import aoc
 
-##def gcd(a,b): return abs(a+b) if a*b == 0 else gcd(b, a%b)
-data = aoc.read(13).strip("\n")
-t = int(data.split("\n")[0])
-b = list(map(int, [i for i in data.split("\n")[1].replace("x", "0").split(",")]))
+# def gcd(a, b): return abs(a + b) if a * b == 0 else gcd(b, a % b)
+data = aoc.strlist(13)
+t = int(data[0])
+b = [int(i) for i in data[1].replace("x", "0").split(",")]
 n, m = max(b), 0
 d = 1
 y = 100000000000000
-for i in range(len(b)):
-    if b[i] == 0: continue
-    for j in range(n):
-        if (t+j)%b[i] == 0:
-            n, m = j, b[i]
+for i, j in enumerate(b):
+    if j == 0: continue
+    for k in range(n):
+        if (t + k) % j == 0:
+            n, m = k, j
             break
-    while y%b[i] != (-i)%b[i]:
+    while (y + i) % j:
         y += d
-    d *= b[i]
-##    d = (d * b[i]) // gcd(d, b[i])
-print(n*m, y)
+    d *= j
+    # d = (d * j) // gcd(d, j)
+print(n * m, y)
+aoc.tock("ms")

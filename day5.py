@@ -1,9 +1,9 @@
 import aoc
 data = aoc.strlist(5)
 
-y = []
+y = set()
 for i in data:
-    y.append(int(i.translate("".maketrans("FBLR", "0101")), 2))
-print(max(y), (set(range(min(y), max(y)+1)) - set(y)).pop())
+    y.add(int(i.translate("".maketrans("FBLR", "0101")), 2))
+print(max(y), (set(range(min(y), max(y) + 1)) - y).pop())
 
 aoc.tock("ms")

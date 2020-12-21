@@ -1,20 +1,13 @@
 import aoc
 data = aoc.strlist(3)
 
-def path(geo, u, v):
-    n = 0
-    j = 0
-    d = len(geo[0])
-    for i in geo[::v]:
-        if i[j%d] == "#":
-            n += 1
-        j += u
-    return n
+p = len(data)
+q = len(data[0])
+n = "".join(i[j % q] for i, j in zip(data, range(0, 3 * p, 3))).count("#")
 
-n = path(data, 3, 1)
-print(n)
-for x, y in [(1,1), (5,1), (7,1), (1,2)]:
-    n *= path(data, x, y)
-print(n)
+m = n
+for u, v in [(1, 1), (5, 1), (7, 1), (1, 2)]:
+    m *= "".join(i[j % q] for i, j in zip(data[::v], range(0, u * p // v, u))).count("#")
 
+print(n, m)
 aoc.tock("ms")
