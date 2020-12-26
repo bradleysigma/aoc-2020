@@ -26,8 +26,7 @@ for k in range(len(instruc)):
         i, j = alter[point]
         point += j if i == "jmp" else 1
         accy += j if i == "acc" else 0
-        if point >= len(alter):
-            break
+        if point >= len(alter): break
     else:
         continue
     break

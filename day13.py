@@ -1,6 +1,6 @@
 import aoc
 
-# def gcd(a, b): return abs(a + b) if a * b == 0 else gcd(b, a % b)
+# gcd = lambda a, b:  abs(a + b) if a * b == 0 else gcd(b, a % b)
 data = aoc.strlist(13)
 t = int(data[0])
 b = [int(i) for i in data[1].replace("x", "0").split(",")]

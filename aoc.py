@@ -8,10 +8,8 @@ def tock(units="s"):
 
 
 def read(n):
-    f = open(f"input{n}.txt")
-    s = f.read()
-    f.close()
-    return s
+    with open(f"input{n}.txt") as f:
+        return f.read()
 
 
 def strlist(n, t=list, d="\n"):
@@ -19,6 +17,8 @@ def strlist(n, t=list, d="\n"):
 
 
 def intlist(n, t=list, d="\n"):
+    if d == "":
+        return t(map(int, read(n).strip("\n")))
     return t(map(int, read(n).strip("\n").split(d)))
 
 
@@ -33,14 +33,13 @@ class vec(tuple):
     def __add__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(i + other for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(i + j for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return self + vec(other)
-        else:
-            raise TypeError(f"cannot add {type(other).__name__} to vec")
+        raise TypeError(f"cannot add {type(other).__name__} to vec")
 
     def __radd__(self, other):
         return self + other
@@ -54,34 +53,66 @@ class vec(tuple):
     def __divmod__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(i // other for i in self), vec(i % other for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(i // j for i, j in zip(self, other)), vec(i % j for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return divmod(self, vec(other))
-        else:
-            raise TypeError(f"cannot divmod {type(other).__name__} with vec")
+        raise TypeError(f"cannot divmod {type(other).__name__} with vec")
 
     def __rdivmod__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(other // i for i in self), vec(other % i for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(j // i for i, j in zip(self, other)), vec(j % i for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return divmod(vec(other), self)
-        else:
-            raise TypeError(f"cannot divmod {type(other).__name__} with vec")
+        raise TypeError(f"cannot divmod {type(other).__name__} with vec")
 
     def __eq__(self, other):
         if isinstance(other, vec):
             if len(self) != len(other):
                 return False
             return all(i == j for i, j in zip(self, other))
-        else:
-            return False
+        return False
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __gt__(self, other):
+        if isinstance(other, (int, float, complex)):
+            return all(i > other for i in self)
+        if isinstance(other, (vec, tuple, list)):
+            if len(self) != len(other):
+                raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
+            return all(i > j for i, j in zip(self, other))
+        if isinstance(other, (map, reversed, range)):
+            return self > vec(other)
+        raise TypeError(f"cannot < {type(other).__name__} with vec")
+
+    def __ge__(self, other):
+        if isinstance(other, vec):
+            return self > other or self == other
+        return False
+
+    def __lt__(self, other):
+        if isinstance(other, (int, float, complex)):
+            return all(i < other for i in self)
+        if isinstance(other, (vec, tuple, list)):
+            if len(self) != len(other):
+                raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
+            return all(i < j for i, j in zip(self, other))
+        if isinstance(other, (map, reversed, range)):
+            return self < vec(other)
+        raise TypeError(f"cannot < {type(other).__name__} with vec")
+
+    def __le__(self, other):
+        if isinstance(other, vec):
+            return self < other or self == other
+        return False
 
     def __floor__(self):
         return vec(i.__floor__() for i in self)
@@ -89,26 +120,24 @@ class vec(tuple):
     def __floordiv__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(i // other for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(i // j for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return self // vec(other)
-        else:
-            raise TypeError(f"cannot multiply {type(other).__name__} to vec")
+        raise TypeError(f"cannot multiply {type(other).__name__} to vec")
 
     def __rfloordiv__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(other // i for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(j // i for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return vec(other) // self
-        else:
-            raise TypeError(f"cannot multiply {type(other).__name__} to vec")
+        raise TypeError(f"cannot multiply {type(other).__name__} to vec")
 
     def __hash__(self):
         return hash(tuple(self))
@@ -116,44 +145,38 @@ class vec(tuple):
     def __mod__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(i % other for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(i % j for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return self % vec(other)
-        else:
-            raise TypeError(f"cannot divmod {type(other).__name__} with vec")
+        raise TypeError(f"cannot divmod {type(other).__name__} with vec")
 
     def __rmod__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(other % i for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(j % i for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return vec(other) % self
-        else:
-            raise TypeError(f"cannot divmod {type(other).__name__} with vec")
+        raise TypeError(f"cannot divmod {type(other).__name__} with vec")
 
     def __mul__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(i * other for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(i * j for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return self * vec(other)
-        else:
-            raise TypeError(f"cannot multiply {type(other).__name__} to vec")
+        raise TypeError(f"cannot multiply {type(other).__name__} to vec")
 
     def __rmul__(self, other):
         return self * other
-
-    def __ne__(self, other):
-        return not self == other
 
     def __neg__(self):
         return vec(-i for i in self)
@@ -164,26 +187,24 @@ class vec(tuple):
     def __pow__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(i ** other for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(i ** j for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return self ** vec(other)
-        else:
-            raise TypeError(f"cannot divmod {type(other).__name__} with vec")
+        raise TypeError(f"cannot divmod {type(other).__name__} with vec")
 
     def __rpow__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(other ** i for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(j ** i for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return vec(other) ** self
-        else:
-            raise TypeError(f"cannot divmod {type(other).__name__} with vec")
+        raise TypeError(f"cannot divmod {type(other).__name__} with vec")
 
     def __round__(self):
         return vec(map(round, self))
@@ -191,14 +212,13 @@ class vec(tuple):
     def __sub__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(i - other for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(i - j for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return self - vec(other)
-        else:
-            raise TypeError(f"cannot add {type(other).__name__} to vec")
+        raise TypeError(f"cannot add {type(other).__name__} to vec")
 
     def __rsub__(self, other):
         return -(self - other)
@@ -206,26 +226,24 @@ class vec(tuple):
     def __truediv__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(i / other for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(i / j for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return self / vec(other)
-        else:
-            raise TypeError(f"cannot multiply {type(other).__name__} to vec")
+        raise TypeError(f"cannot multiply {type(other).__name__} to vec")
 
     def __rtruediv__(self, other):
         if isinstance(other, (int, float, complex)):
             return vec(other / i for i in self)
-        elif isinstance(other, (vec, tuple, list)):
+        if isinstance(other, (vec, tuple, list)):
             if len(self) != len(other):
                 raise IndexError(f"iterable lengths mismatched ({len(self) - len(other)})")
             return vec(j / i for i, j in zip(self, other))
-        elif isinstance(other, (map)):
+        if isinstance(other, (map, reversed, range)):
             return vec(other) / self
-        else:
-            raise TypeError(f"cannot multiply {type(other).__name__} to vec")
+        raise TypeError(f"cannot multiply {type(other).__name__} to vec")
 
     def __trunc__(self):
         return vec(i.__trunc__() for i in self)

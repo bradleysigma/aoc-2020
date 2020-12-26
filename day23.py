@@ -15,7 +15,7 @@ for i, j in enumerate(data):
     c[i][V] = j
     r[j] = c[i]
 
-p = c[V]
+p = c[0]
 for i in range(100):
     m = p[N], p[N][N], p[N][N][N]
     p[N] = p[N][N][N][N]
@@ -46,7 +46,7 @@ for i, j in enumerate(data):
     c[i][V] = j
     r[j] = c[i]
 
-p = c[V]
+p = c[0]
 for i in range(10000000):
     m = p[N], p[N][N], p[N][N][N]
     p[N] = p[N][N][N][N]
